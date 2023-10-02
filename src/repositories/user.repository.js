@@ -14,6 +14,17 @@ export function getUserById(id){
         [id])
 }
 
+export function getUserRanking(){
+    return db.query(`
+        SELECT users.id, users.name, COUNT(urls.id) "linksCount", COALESCE(SUM(urls."visitCount"), 0) AS "visitCount"
+            FROM users
+            LEFT JOIN urls ON users.id = urls."userId"
+            GROUP BY users.id, users,name
+            ORDER BY "visitCount" DESC, "linkCount" DESC
+            LIMIT 10;
+    `)
+}
+
 export function getUrlsByUsers(userId){
     return db.query(`SELECT id, url, "shortUrl", "visitCount" FROM urls WHERE "userId"=$1`, [userId])
 }
